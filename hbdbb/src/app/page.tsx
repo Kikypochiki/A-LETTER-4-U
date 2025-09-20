@@ -3,6 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Heart } from "lucide-react";
 
+// define confetti type
+type Confetti = {
+  left: string;
+  top: string;
+  animationDelay: string;
+  width: string;
+  height: string;
+  className: string;
+  key: number;
+  color: string;
+};
+
 export default function Home() {
   const [open, setOpen] = useState(false);
   const fullMessage =
@@ -12,9 +24,9 @@ export default function Home() {
   const [mwaList, setMwaList] = useState<
     { id: number; x: number; y: number }[]
   >([]);
-  const [confettiData, setConfettiData] = useState<any[]>([]);
+  const [confettiData, setConfettiData] = useState<Confetti[]>([]);
 
-  // stable ID counter
+  // stable ID counter (avoids SSR mismatch from Date.now)
   const idRef = useRef(0);
   const nextId = () => ++idRef.current;
 
@@ -33,7 +45,6 @@ export default function Home() {
     const rect = e.currentTarget.getBoundingClientRect();
     const id = nextId();
 
-    // random position around heart (client-side only)
     const offsetX = Math.random() * 80 - 40;
     const offsetY = Math.random() * 80 - 40;
 
@@ -60,9 +71,9 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [open]);
 
-  // Confetti (client-only, avoids SSR mismatch)
+  // Confetti (client-only)
   useEffect(() => {
-    const confettiArr = [...Array(24)].map((_, i) => ({
+    const confettiArr: Confetti[] = [...Array(24)].map((_, i) => ({
       left: `${Math.random() * 100}%`,
       top: `-${20 + Math.random() * 40}%`,
       animationDelay: `${Math.random() * 2}s`,
